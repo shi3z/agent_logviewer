@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS events (
 CREATE INDEX IF NOT EXISTS events_session ON events(session_id, seq);
 
 -- trigram, not unicode61: unicode61 cannot split CJK at all (a query for
--- 「検索」 matches nothing), while trigram indexes Japanese, English and code
+-- a CJK query matches nothing), while trigram indexes CJK, English and code
 -- with the same tokenizer.  The trade-off is that trigram needs >= 3
 -- characters, so shorter queries fall back to LIKE (see ``_like_search``).
 CREATE VIRTUAL TABLE IF NOT EXISTS events_fts USING fts5(

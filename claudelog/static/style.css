@@ -278,7 +278,7 @@ main { padding: 0 18px 80px; }
 }
 .trunc button { padding: 2px 8px; font-size: 11.5px; margin-left: 6px; }
 
-/* ── Markdown 描画 ───────────────────────────────────────── */
+/* ── Markdown rendering ──────────────────────────────────── */
 
 .ev-body .md { white-space: normal; }
 .ev-body .md > :first-child { margin-top: 0; }
@@ -323,7 +323,7 @@ main { padding: 0 18px 80px; }
 .ev-body .md th { background: rgba(255,255,255,.04); font-weight: 600; }
 .ev-body .md img { max-width: 100%; border-radius: 6px; }
 
-/* ── 結論のみ表示 ────────────────────────────────────────── */
+/* ── conclusions-only view ───────────────────────────────── */
 
 .turnsep {
   display: flex; align-items: center; gap: 10px;
