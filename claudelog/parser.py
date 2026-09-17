@@ -144,6 +144,7 @@ class Session:
     id: str
     path: str
     project: str = ""
+    source: str = "claude"   # claude | codex
     cwd: str = ""
     git_branch: str = ""
     version: str = ""
@@ -379,6 +380,30 @@ def _image_meta(block: dict) -> dict:
 def default_root() -> str:
     return os.environ.get("CLAUDELOG_ROOT") or os.path.join(
         os.path.expanduser("~"), ".claude", "projects")
+
+
+def codex_root() -> str:
+    """Where the Codex CLI keeps its rollouts."""
+    return os.environ.get("CLAUDELOG_CODEX_ROOT") or os.path.join(
+        os.path.expanduser("~"), ".codex", "sessions")
+
+
+def discover_codex(root: str) -> list[tuple[str, int, float]]:
+    """Return ``(path, size, mtime)`` for every Codex rollout under *root*."""
+    found: list[tuple[str, int, float]] = []
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in ("node_modules", ".git")]
+        for fn in filenames:
+            if not (fn.startswith("rollout-") and fn.endswith(".jsonl")):
+                continue
+            path = os.path.join(dirpath, fn)
+            try:
+                st = os.stat(path)
+            except OSError:
+                continue
+            found.append((path, st.st_size, st.st_mtime))
+    found.sort(key=lambda t: t[2], reverse=True)
+    return found
 
 
 def discover(root: str) -> list[tuple[str, int, float]]:

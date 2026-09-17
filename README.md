@@ -14,6 +14,8 @@ claudelog index     # build/refresh the index
 claudelog serve     # http://127.0.0.1:8787
 ```
 
+![claudelog](docs/screenshot.jpg)
+
 ## What it gives you
 
 **Everything is colour-coded by kind.** Prompts, replies, thinking, tool calls,

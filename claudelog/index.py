@@ -25,7 +25,7 @@ import time
 from dataclasses import dataclass
 from typing import Any, Iterable
 
-from . import parser
+from . import codex, parser
 
 SCHEMA_VERSION = 4
 
@@ -188,6 +188,9 @@ class Index:
         self.dir = os.path.dirname(self.db_path) or "."
         self.image_dir = os.path.join(self.dir, "images")
         self.root = root or parser.default_root()
+        #: Codex rollouts live in a separate tree; ``""`` disables them.
+        self.codex_root = ("" if os.environ.get("CLAUDELOG_NO_CODEX")
+                           else parser.codex_root())
         os.makedirs(self.dir, exist_ok=True)
         os.makedirs(self.image_dir, exist_ok=True)
         #: one connection *per thread*.  ``ThreadingHTTPServer`` handles every
@@ -255,19 +258,27 @@ class Index:
             self.reset()
 
         known = self.known()
-        files = parser.discover(self.root)
+        # (path, size, mtime, parser, root) -- Claude Code and Codex rollouts
+        # share the index; each keeps its own discovery and parser.
+        files: list[tuple[str, int, float, Any, str]] = [
+            (p, s, m, parser.parse_session, self.root)
+            for p, s, m in parser.discover(self.root)]
+        if self.codex_root:
+            files += [(p, s, m, codex.parse_session, self.codex_root)
+                      for p, s, m in parser.discover_codex(self.codex_root)]
+        files.sort(key=lambda t: t[2], reverse=True)
         if limit:
             files = files[:limit]
         seen: set[str] = set()
 
-        for i, (path, size, mtime) in enumerate(files, 1):
+        for i, (path, size, mtime, parse, root) in enumerate(files, 1):
             seen.add(path)
             prev = known.get(path)
             if prev and prev[0] == size and abs(prev[1] - mtime) < 1e-6:
                 stats.skipped += 1
                 continue
             try:
-                sess = parser.parse_session(path, self.root)
+                sess = parse(path, root)
             except Exception as exc:  # pragma: no cover - defensive
                 stats.errors += 1
                 if progress:
