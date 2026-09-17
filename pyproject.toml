@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "claudelog"
+version = "0.1.0"
+description = "Search, colour-code and summarise your Claude Code transcripts locally"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = []          # standard library only
+
+[project.scripts]
+claudelog = "claudelog.cli:main"
+
+[tool.setuptools]
+packages = ["claudelog"]
+
+[tool.setuptools.package-data]
+claudelog = ["static/*"]

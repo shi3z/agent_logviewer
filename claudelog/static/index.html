@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>claudelog — Claude Code log search</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand" id="brand">
+    <span class="logo">◆</span> claudelog
+    <span class="ver" id="ver"></span>
+  </div>
+
+  <form class="searchbox" id="searchform" autocomplete="off">
+    <input type="search" id="q" name="q" placeholder="Full-text search…  (e.g. FTS5, &quot;error handling&quot;, -deprecated)"
+           aria-label="Search">
+    <div class="searchopts">
+      <select id="mode" title="How to combine terms">
+        <option value="and">AND</option>
+        <option value="or">OR</option>
+      </select>
+      <select id="project" title="Filter by project">
+        <option value="">All projects</option>
+      </select>
+      <button type="submit" class="primary">Search</button>
+    </div>
+  </form>
+
+  <nav class="tabs">
+    <button data-view="search" class="active">Search</button>
+    <button data-view="sessions">Sessions</button>
+    <button data-view="stats">Stats</button>
+  </nav>
+</header>
+
+<main id="main">
+
+  <!-- ── search ─────────────────────────────────────────────── -->
+  <section id="view-search" class="view active">
+    <div class="filters" id="searchfilters">
+      <span class="flabel">Kind:</span>
+      <label class="chip k-prompt"><input type="checkbox" value="prompt" checked> Prompt</label>
+      <label class="chip k-assistant"><input type="checkbox" value="assistant" checked> Reply</label>
+      <label class="chip k-thinking"><input type="checkbox" value="thinking"> Thinking</label>
+      <label class="chip k-tool_use"><input type="checkbox" value="tool_use"> Tool calls</label>
+      <label class="chip k-tool_result"><input type="checkbox" value="tool_result"> Tool results</label>
+      <span class="spacer"></span>
+      <span class="muted" id="searchmeta"></span>
+    </div>
+    <div id="results" class="results"></div>
+    <div class="more"><button id="morebtn" hidden>Load more</button></div>
+  </section>
+
+  <!-- ── session list ───────────────────────────────────── -->
+  <section id="view-sessions" class="view">
+    <div class="filters">
+      <input type="search" id="sessq" placeholder="Filter by title or path">
+      <select id="sessorder">
+        <option value="last_ts">Newest first</option>
+        <option value="first_ts">Oldest first</option>
+        <option value="events">Event count</option>
+        <option value="size">Size</option>
+      </select>
+      <span class="spacer"></span>
+      <span class="muted" id="sessmeta"></span>
+    </div>
+    <div id="sesslist" class="sesslist"></div>
+  </section>
+
+  <!-- ── stats ─────────────────────────────────────────────── -->
+  <section id="view-stats" class="view">
+    <div id="stats" class="stats"></div>
+  </section>
+
+  <!-- ── session detail ───────────────────────────────────── -->
+  <section id="view-detail" class="view">
+    <div class="detailbar">
+      <button id="backbtn" class="ghost">← Back</button>
+      <div class="detailtitle" id="dtitle"></div>
+      <span class="spacer"></span>
+      <button id="mdbtn" class="ghost on" title="Render prose as Markdown">Markdown</button>
+      <button id="conclbtn" class="ghost" title="Show only prompts and replies, digesting tool calls">Conclusions</button>
+      <button id="rawbtn" class="ghost" title="Show tool output in full">Full text</button>
+      <button id="htmlbtn" class="ghost" title="Save as a standalone, foldable HTML file">Download HTML</button>
+      <button id="extractbtn" class="ghost" title="Open as Markdown in a new tab">Export Markdown</button>
+      <button id="copybtn" class="ghost">Copy Markdown</button>
+    </div>
+
+    <div id="dmeta" class="dmeta"></div>
+
+    <div class="filters sticky" id="detailfilters">
+      <span class="flabel">Show:</span>
+      <label class="chip k-prompt"><input type="checkbox" value="prompt" checked> Prompt</label>
+      <label class="chip k-assistant"><input type="checkbox" value="assistant" checked> Reply</label>
+      <label class="chip k-thinking"><input type="checkbox" value="thinking" checked> Thinking</label>
+      <label class="chip k-tool_use"><input type="checkbox" value="tool_use" checked> Tool calls</label>
+      <label class="chip k-tool_result"><input type="checkbox" value="tool_result" checked> Tool results</label>
+      <label class="chip k-image"><input type="checkbox" value="image" checked> Images</label>
+      <span class="spacer"></span>
+      <label class="chip"><input type="checkbox" id="collapse"> Collapse all</label>
+    </div>
+
+    <div id="timeline" class="timeline"></div>
+  </section>
+
+</main>
+
+<div id="toast" class="toast" hidden></div>
+<script src="/md.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
