@@ -288,6 +288,7 @@ main { padding: 0 18px 80px; }
 }
 .src-claude { color: #d9a066; background: rgba(217,160,102,.13); }
 .src-codex  { color: #7dd3a0; background: rgba(125,211,160,.13); }
+.src-antigravity { color: #82aaff; background: rgba(130,170,255,.13); }
 
 /* ── Markdown rendering ──────────────────────────────────── */
 

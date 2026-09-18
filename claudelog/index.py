@@ -25,7 +25,7 @@ import time
 from dataclasses import dataclass
 from typing import Any, Iterable
 
-from . import codex, parser
+from . import antigravity, codex, parser
 
 SCHEMA_VERSION = 5
 
@@ -192,6 +192,9 @@ class Index:
         #: Codex rollouts live in a separate tree; ``""`` disables them.
         self.codex_root = ("" if os.environ.get("CLAUDELOG_NO_CODEX")
                            else parser.codex_root())
+        #: antigravity-cli conversations live in their own tree; ``""`` disables them.
+        self.antigravity_root = ("" if os.environ.get("CLAUDELOG_NO_ANTIGRAVITY")
+                                 else parser.antigravity_root())
         os.makedirs(self.dir, exist_ok=True)
         os.makedirs(self.image_dir, exist_ok=True)
         #: one connection *per thread*.  ``ThreadingHTTPServer`` handles every
@@ -267,6 +270,9 @@ class Index:
         if self.codex_root:
             files += [(p, s, m, codex.parse_session, self.codex_root)
                       for p, s, m in parser.discover_codex(self.codex_root)]
+        if self.antigravity_root:
+            files += [(p, s, m, antigravity.parse_session, self.antigravity_root)
+                      for p, s, m in parser.discover_antigravity(self.antigravity_root)]
         files.sort(key=lambda t: t[2], reverse=True)
         if limit:
             files = files[:limit]

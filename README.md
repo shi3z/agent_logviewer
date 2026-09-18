@@ -1,10 +1,14 @@
 # claudelog
 
-Search, colour-code and read your past Claude Code sessions — locally, with no
+Search, colour-code and read your past Claude Code, Codex CLI, and antigravity-cli sessions — locally, with no
 dependencies beyond the Python standard library.
 
-Claude Code writes every session to `~/.claude/projects/<project>/<id>.jsonl`.
-Those files are complete but unreadable: a single session can be 288 MB of
+Supports:
+- **Claude Code**: transcripts in `~/.claude/projects/<project>/<id>.jsonl`
+- **Codex CLI**: rollouts in `~/.codex/sessions/<Y>/<M>/<D>/rollout-*.jsonl`
+- **antigravity-cli**: conversations in `~/.gemini/antigravity-cli/conversations/<id>.db` (SQLite + protobuf wire parsing)
+
+Those files are complete but unreadable: a single session can be hundreds of megabytes of
 interleaved prompts, replies, thinking blocks, tool calls and tool results.
 claudelog indexes them into SQLite and gives you a web UI for reading what
 actually happened.
@@ -91,6 +95,8 @@ from the public internet.
 ```
 claudelog/
   parser.py       JSONL -> flat event stream (prompt/reply/thinking/tool_use/...)
+  codex.py        Codex CLI rollout parser
+  antigravity.py  antigravity-cli SQLite + protobuf parser
   index.py        SQLite + FTS5 index, incremental, images decoded to disk
   server.py       stdlib HTTP server and the JSON API
   html_export.py  self-contained single-file HTML export

@@ -388,6 +388,12 @@ def codex_root() -> str:
         os.path.expanduser("~"), ".codex", "sessions")
 
 
+def antigravity_root() -> str:
+    """Where antigravity-cli keeps its conversations."""
+    return os.environ.get("CLAUDELOG_ANTIGRAVITY_ROOT") or os.path.join(
+        os.path.expanduser("~"), ".gemini", "antigravity-cli", "conversations")
+
+
 def discover_codex(root: str) -> list[tuple[str, int, float]]:
     """Return ``(path, size, mtime)`` for every Codex rollout under *root*."""
     found: list[tuple[str, int, float]] = []
@@ -402,6 +408,24 @@ def discover_codex(root: str) -> list[tuple[str, int, float]]:
             except OSError:
                 continue
             found.append((path, st.st_size, st.st_mtime))
+    found.sort(key=lambda t: t[2], reverse=True)
+    return found
+
+
+def discover_antigravity(root: str) -> list[tuple[str, int, float]]:
+    """Return ``(path, size, mtime)`` for every antigravity conversation DB under *root*."""
+    found: list[tuple[str, int, float]] = []
+    if not os.path.isdir(root):
+        return found
+    for fn in os.listdir(root):
+        if not fn.endswith(".db"):
+            continue
+        path = os.path.join(root, fn)
+        try:
+            st = os.stat(path)
+        except OSError:
+            continue
+        found.append((path, st.st_size, st.st_mtime))
     found.sort(key=lambda t: t[2], reverse=True)
     return found
 
