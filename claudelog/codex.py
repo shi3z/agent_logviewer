@@ -112,6 +112,9 @@ def parse_session(path: str, root: str = "") -> Session:
         if not isinstance(payload, dict):
             continue
         ts = obj.get("timestamp") or ""
+        if ts:
+            sess.first_ts = sess.first_ts or ts
+            sess.last_ts = ts
 
         if etype == "session_meta":
             sess.cwd = payload.get("cwd") or sess.cwd

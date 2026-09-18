@@ -169,7 +169,7 @@ $('#sessorder').onchange = loadSessions;
 async function loadSessions() {
   const data = await api('/api/sessions', {
     q: $('#sessq').value, order: $('#sessorder').value,
-    project: $('#project').value, limit: 200,
+    project: $('#project').value, limit: 500,
   });
   const root = $('#sesslist');
   if (!data.sessions.length) {
@@ -178,7 +178,7 @@ async function loadSessions() {
   }
   root.innerHTML = data.sessions.map(s => `
     <div class="sess" data-sid="${esc(s.id)}">
-      <div class="sess-title">${esc(s.title || '(untitled)')}</div>
+      <div class="sess-title"><span class="src src-${esc(s.source || 'claude')}">${esc(s.source || 'claude')}</span>${esc(s.title || '(untitled)')}</div>
       <div class="sess-nums">
         <span>prompts <b>${s.n_user}</b></span>
         <span>replies <b>${s.n_assistant}</b></span>
@@ -295,6 +295,7 @@ function renderDetail(focusSeq) {
   const s = state.session;
   $('#dtitle').textContent = s.title || '(untitled)';
   $('#dmeta').innerHTML = [
+    `<span class="src src-${esc(s.source || 'claude')}">${esc(s.source || 'claude')}</span>`,
     `id ${esc(s.id.slice(0, 8))}`,
     esc(s.cwd || s.project || ''),
     `${esc(fmtTime(s.first_ts))} → ${esc(fmtTime(s.last_ts))}`,

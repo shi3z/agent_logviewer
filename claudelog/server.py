@@ -71,14 +71,15 @@ class Api:
     def sessions(self, q: dict) -> dict:
         project = (q.get("project") or [""])[0] or None
         query = (q.get("q") or [""])[0] or None
+        source = (q.get("source") or [""])[0] or None
         order = (q.get("order") or ["last_ts"])[0]
         try:
-            limit = min(int((q.get("limit") or ["100"])[0]), 500)
+            limit = min(int((q.get("limit") or ["200"])[0]), 1000)
             offset = max(int((q.get("offset") or ["0"])[0]), 0)
         except ValueError:
-            limit, offset = 100, 0
+            limit, offset = 200, 0
         rows = self.index.sessions(project=project, limit=limit, offset=offset,
-                                   order=order, query=query)
+                                   order=order, query=query, source=source)
         for r in rows:
             r["models"] = _loads(r.get("models"), [])
             r["tools"] = _loads(r.get("tools"), {})

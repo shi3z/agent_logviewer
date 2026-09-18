@@ -278,6 +278,17 @@ main { padding: 0 18px 80px; }
 }
 .trunc button { padding: 2px 8px; font-size: 11.5px; margin-left: 6px; }
 
+/* ── source badge (which CLI wrote the transcript) ───────── */
+
+.src {
+  display: inline-block; margin-right: 7px; padding: 1px 6px;
+  border-radius: 4px; font-family: var(--mono); font-size: 10px;
+  font-weight: 600; letter-spacing: .04em; vertical-align: 1px;
+  text-transform: uppercase;
+}
+.src-claude { color: #d9a066; background: rgba(217,160,102,.13); }
+.src-codex  { color: #7dd3a0; background: rgba(125,211,160,.13); }
+
 /* ── Markdown rendering ──────────────────────────────────── */
 
 .ev-body .md { white-space: normal; }

@@ -27,7 +27,7 @@ from typing import Any, Iterable
 
 from . import codex, parser
 
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 
 SCHEMA = """
 PRAGMA journal_mode=WAL;
@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     id           TEXT PRIMARY KEY,
     path         TEXT NOT NULL,
     project      TEXT,
+    source       TEXT DEFAULT 'claude',
     cwd          TEXT,
     git_branch   TEXT,
     version      TEXT,
@@ -317,12 +318,13 @@ class Index:
         self._delete_session(sess.id)
         self.conn.execute(
             """INSERT INTO sessions
-               (id, path, project, cwd, git_branch, version, title, slug,
+               (id, path, project, source, cwd, git_branch, version, title, slug,
                 first_ts, last_ts, n_user, n_assistant, n_tool, n_thinking,
                 n_events, models, tools, size, mtime, indexed_at)
-               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-            (sess.id, sess.path, sess.project, sess.cwd, sess.git_branch,
-             sess.version, sess.title, sess.slug, sess.first_ts, sess.last_ts,
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+            (sess.id, sess.path, sess.project, sess.source, sess.cwd,
+             sess.git_branch, sess.version, sess.title, sess.slug,
+             sess.first_ts, sess.last_ts,
              sess.n_user, sess.n_assistant, sess.n_tool, sess.n_thinking,
              len(sess.events), json.dumps(sess.models, ensure_ascii=False),
              json.dumps(sess.tools, ensure_ascii=False), sess.size, sess.mtime,
@@ -451,14 +453,17 @@ class Index:
 
     def sessions(self, project: str | None = None, limit: int = 200,
                  offset: int = 0, order: str = "last_ts",
-                 query: str | None = None) -> list[dict]:
-        cols = ("id, project, cwd, git_branch, version, title, slug, first_ts,"
-                " last_ts, n_user, n_assistant, n_tool, n_thinking, n_events,"
-                " models, tools, size")
+                 query: str | None = None, source: str | None = None) -> list[dict]:
+        cols = ("id, project, source, cwd, git_branch, version, title, slug,"
+                " first_ts, last_ts, n_user, n_assistant, n_tool, n_thinking,"
+                " n_events, models, tools, size")
         where, params = [], []
         if project:
             where.append("project = ?")
             params.append(project)
+        if source:
+            where.append("source = ?")
+            params.append(source)
         if query:
             where.append("(title LIKE ? OR cwd LIKE ? OR id LIKE ?)")
             like = f"%{query}%"
